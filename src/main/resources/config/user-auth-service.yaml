@@ -1,0 +1,103 @@
+spring:
+  application:
+    name: user-auth-service
+
+server:
+  port: 8081  # Port cho service
+
+# Database config (PostgreSQL)
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/user_auth_db  # URL kết nối (thay localhost nếu Docker)
+    username: root  # User DB
+    password: admin123456  # Password DB
+    driver-class-name: org.postgresql.Driver  # Driver PostgreSQL
+    hikari:  # Connection pool tối ưu
+      maximum-pool-size: 10  # Max connections (tùy chỉnh theo load)
+      minimum-idle: 5  # Min idle connections
+      idle-timeout: 30000  # Idle timeout (ms)
+      connection-timeout: 30000  # Timeout kết nối (ms)
+      max-lifetime: 1800000  # Max lifetime connection (30 phút)
+
+  jpa:  # Spring Data JPA config
+    hibernate:
+      ddl-auto: none  # Không auto create schema (sử dụng Flyway để an toàn)
+    show-sql: true  # Hiển thị SQL log (debug, tắt ở production)
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect  # Dialect cho Postgres
+        format_sql: true  # Format SQL log đẹp
+        default_schema: public  # Schema default
+        generate_statistics: true  # Theo dõi stats JPA (tùy chọn)
+    open-in-view: false  # Tắt open-in-view để tránh lazy load error
+
+# Flyway migration config (tự động migrate schema)
+spring:
+  flyway:
+    enabled: true  # Bật Flyway
+    locations: classpath:db/migration  # Đường dẫn script migration (tạo folder src/main/resources/db/migration)
+    baseline-on-migrate: true  # Baseline nếu DB đã có data
+    out-of-order: true  # Cho phép migration out-of-order
+    schemas: public  # Schema migrate
+
+# Security & JWT config (tích hợp với DB)
+jwt:
+  secret: your_jwt_secret_key  # Secret key cho JJWT (thay bằng key mạnh)
+  expiration: 86400000  # Thời gian hết hạn JWT (1 ngày ms)
+
+# gRPC config (internal calls)
+grpc:
+  server:
+    port: 9090
+    security:
+      enabled: true
+      certificateChain: classpath:certs/server.crt
+      privateKey: classpath:certs/server.key
+    keep-alive-time: 5s
+
+# Eureka config (discovery)
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    metadata-map:
+      grpc.port: ${grpc.server.port}
+
+# Logging config
+logging:
+  level:
+    root: info
+    org.springframework.security: debug  # Debug auth
+  file:
+    name: D:\WorkSpace\Project\FPM-2025\log\user-auth.log
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+
+# RabbitMQ (nếu dùng event auth, e.g., user_created)
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+# Redis (nếu cache JWT)
+redis:
+  port: 6378
+  url: localhost
+  
+  kafka:
+      bootstrap-servers: localhost:9092
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      consumer:
+        group-id: user-auth-group
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring.json.trusted.packages: '*'

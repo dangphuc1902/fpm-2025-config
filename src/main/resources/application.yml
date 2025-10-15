@@ -1,0 +1,30 @@
+server:
+  port: 8888  # Port mặc định cho Config Server, có thể thay đổi
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/config  # Thư mục chứa file config (e.g., api-gateway.yml)
+      enabled: true  # Bật Config Server (mặc định true, giữ để rõ ràng)
+  profiles:
+    active: native  # Sử dụng chế độ native (file-based) thay vì Git
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info  # Expose endpoints để kiểm tra trạng thái
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud: DEBUG  # Debug để kiểm tra log Config Server
+  file:
+    name: D:\WorkSpace\Project\FPM-2025\log\config-server.log  # Log file (tùy chỉnh đường dẫn)
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB  # Giới hạn kích thước log
