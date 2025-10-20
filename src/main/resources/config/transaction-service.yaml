@@ -48,3 +48,25 @@ eureka:
     prefer-ip-address: true
     metadata-map:
       grpc.port: ${grpc.server.port}
+# Logging config
+logging:
+  level:
+  	root: info
+  	org.springframework.security: debug  # Debug auth
+  file:
+  	name: D:\WorkSpace\Project\FPM-2025\log\transaction-service.log
+  logback:
+  	rollingpolicy:
+    	max-file-size: 100MB	  
+kafka:
+  bootstrap-servers: localhost:9092
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  consumer:
+    group-id: transaction-group
+    auto-offset-reset: earliest
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      spring.json.trusted.packages: '*'
