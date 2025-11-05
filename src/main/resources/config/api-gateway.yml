@@ -1,61 +1,150 @@
-server:
-  port: 8080
 spring:
+  application:
+    name: api-gateway
+  
   cloud:
     gateway:
+      # Discovery locator cho Eureka
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
+      
+      # Route definitions
       routes:
-        - id: user-auth-route
+        # ============ USER AUTH ROUTES ============
+        - id: user-auth-login
           uri: lb://user-auth-service
           predicates:
-            - Path=/auth/**
+            - Path=/api/v1/auth/login
+            - Method=POST
           filters:
-            - AuthenticationFilter
-        - id: wallet-route
+            - name: CircuitBreaker
+              args:
+                name: authCircuitBreaker
+                fallbackUri: forward:/fallback/auth
+        
+        - id: user-auth-register
+          uri: lb://user-auth-service
+          predicates:
+            - Path=/api/v1/auth/register
+            - Method=POST
+        
+        - id: user-auth-validate
+          uri: lb://user-auth-service
+          predicates:
+            - Path=/api/v1/auth/validate
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+        
+        # ============ WALLET ROUTES ============
+        - id: wallet-service
           uri: lb://wallet-service
           predicates:
-            - Path=/wallets/**
-        - id: transaction-route
+            - Path=/api/v1/wallets/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: walletCircuitBreaker
+            - StripPrefix=0  # Giữ nguyên path
+        
+        - id: categories
+          uri: lb://wallet-service
+          predicates:
+            - Path=/api/v1/categories/**
+        
+        # ============ TRANSACTION ROUTES ============
+        - id: transaction-service
           uri: lb://transaction-service
           predicates:
-            - Path=/transactions/**
-        - id: reporting-route
+            - Path=/api/v1/transactions/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: transactionCircuitBreaker
+        
+        # ============ REPORTING ROUTES ============
+        - id: reporting-service
           uri: lb://reporting-service
           predicates:
-            - Path=/reports/**
-rabbitmq:
-  host: localhost
-  port: 5672
-  username: guest
-  password: guest
-redis:
-  port: 6378
-  url: localhost
-grpc:
-  client:
-    user-auth-service:
-      address: discovery:///user-auth-service:9090
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-    wallet-service:
-      address: discovery:///wallet-service:9091
-    transaction-service:
-      address: discovery:///transaction-service:9092
-    reporting-service:
-      address: discovery:///reporting-service:9093
+            - Path=/api/v1/reports/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+      
+      # Global CORS configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: 
+              - "http://localhost:3000"
+              - "http://localhost:5173"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers: "*"
+            allow-credentials: true
+            max-age: 3600
+      
+      # Default filters
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+
+# Eureka Client Configuration
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
   instance:
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+
+# Resilience4j Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    instances:
+      authCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
+        permitted-number-of-calls-in-half-open-state: 3
+      
+      walletCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
+      
+      transactionCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,circuitbreakers
+  endpoint:
+    gateway:
+      enabled: true
+    health:
+      show-details: always
+
+server:
+  port: 8080
+
 logging:
   level:
-    root: info
-  file:
-    name: D:\WorkSpace\Project\FPM-2025\log\gateway.log
-  logback:
-    rollingpolicy:
-      max-file-size: 100MB
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO

@@ -43,6 +43,9 @@ logging:
     root: info
   file:
     name: D:\WorkSpace\Project\FPM-2025\log\reporting.log
+  pattern:
+	file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+	console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
   logback:
     rollingpolicy:
       max-file-size: 100MB

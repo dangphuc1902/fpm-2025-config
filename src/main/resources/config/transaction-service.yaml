@@ -1,72 +1,90 @@
-server:
-  port: 8083
-
 spring:
   application:
     name: transaction-service
+  
+  # Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5433/transaction_db
+    url: jdbc:postgresql://localhost:5433/fpm_transactions
     username: root
     password: admin123456
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+  
+  # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none  # Use Flyway for migrations
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  
+  # RabbitMQ Configuration
   rabbitmq:
     host: localhost
     port: 5672
     username: guest
     password: guest
-redis:
-  port: 6378
-  url: localhost
-logging:
-  level:
-    root: info
-  file:
-    name: D:\WorkSpace\Project\FPM-2025\log\transaction.log
-  logback:
-    rollingpolicy:
-      max-file-size: 100MB
-grpc:
-  server:
-    port: 9092
-    security:
-      enabled: true
-      certificateChain: classpath:certs/server.crt
-      privateKey: classpath:certs/server.key
-    keep-alive-time: 5s
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          multiplier: 2.0
+
+# Eureka Client
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
   instance:
     prefer-ip-address: true
-    metadata-map:
-      grpc.port: ${grpc.server.port}
-# Logging config
+    lease-renewal-interval-in-seconds: 10
+
+# gRPC Configuration
+grpc:
+  client:
+    wallet-service:
+      address: discovery:///wallet-service  # Sử dụng Eureka discovery
+      negotiation-type: plaintext
+      max-inbound-message-size: 4194304  # 4MB
+  server:
+    port: 9093
+
+# Management & Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+server:
+  port: 8083
+
 logging:
   level:
-  	root: info
-  	org.springframework.security: debug  # Debug auth
-  file:
-  	name: D:\WorkSpace\Project\FPM-2025\log\transaction-service.log
-  logback:
-  	rollingpolicy:
-    	max-file-size: 100MB	  
-kafka:
-  bootstrap-servers: localhost:9092
-  producer:
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-  consumer:
-    group-id: transaction-group
-    auto-offset-reset: earliest
-    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-    properties:
-      spring.json.trusted.packages: '*'
+    com.fpm_2025.transaction_service: DEBUG
+    org.springframework.amqp: INFO
+    io.grpc: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
