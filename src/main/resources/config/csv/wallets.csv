@@ -1,0 +1,21 @@
+wallet_id,user_id,wallet_name,balance,currency,is_active,description,created_date,updated_date
+1,1,Tiết kiệm,1000.00,VND,true,Ví tiết kiệm chính,2025-09-01,2025-09-28
+2,2,Chi tiêu hàng ngày,500.50,VND,true,Ví chi tiêu hằng ngày,2025-09-02,2025-09-28
+3,3,Dự án đặc biệt,501.50,VND,true,Ví cho dự án,2025-09-03,2025-09-29
+4,4,Ví du lịch,502.50,USD,true,Tiền du lịch nước ngoài,2025-09-04,2025-09-30
+5,5,Ví học tập,503.50,VND,true,Chi phí học tập,2025-09-05,2025-10-01
+6,6,Ví sức khỏe,504.50,VND,false,Chi phí y tế (tạm khóa),2025-09-06,2025-10-02
+7,7,Ví khẩn cấp,505.50,VND,true,Quỹ khẩn cấp,2025-09-07,2025-10-03
+8,8,Ví gia đình,506.50,VND,true,Ví quản lý chung,2025-09-08,2025-10-04
+9,9,Ví tiểu thương,507.50,EUR,true,Tiền euro dự trữ,2025-09-09,2025-10-05
+10,10,Ví cho con,508.50,VND,true,Chi phí con yêu,2025-09-10,2025-10-06
+11,11,Ví mục tiêu,509.50,VND,true,Mục tiêu tiết kiệm,2025-09-11,2025-10-07
+12,12,Ví phụ cấp,510.50,VND,true,Phụ cấp thêm,2025-09-12,2025-10-08
+13,13,Ví hoạt động,511.50,VND,true,Chi hoạt động xã hội,2025-09-13,2025-10-09
+14,14,Ví tinh tế,512.50,GBP,true,Tiền bảng Anh,2025-09-14,2025-10-10
+15,15,Ví phát triển,513.50,VND,true,Đầu tư phát triển,2025-09-15,2025-10-11
+16,16,Ví chính,514.50,VND,true,Ví chính của tài khoản,2025-09-16,2025-10-12
+17,17,Ví quỹ,515.50,VND,true,Quỹ dự phòng,2025-09-17,2025-10-13
+18,18,Ví hiếm dùng,516.50,VND,false,Ví lạc quên (tắt),2025-09-18,2025-10-14
+19,19,Ví chính năm nay,517.50,VND,true,Ví năm 2025,2025-09-19,2025-10-15
+20,20,Ví phần còn lại,518.50,VND,true,Quản lý phần còn lại,2025-09-20,2025-10-16

@@ -1,0 +1,21 @@
+category_id,user_id,category_name,parent_id,depth,is_active,icon,color,created_date
+1,,Thực phẩm & Đồ uống,,0,true,🍕,#FF6B6B,2025-09-01
+2,,Vận chuyển,,0,true,🚗,#4ECDC4,2025-09-01
+3,,Giáo dục,,0,true,📚,#45B7D1,2025-09-01
+4,,Sức khỏe & Thể dục,,0,true,💪,#96CEB4,2025-09-01
+5,,Giải trí,,0,true,🎬,#FFEAA7,2025-09-01
+6,,Mua sắm,,0,true,🛍️,#DDA15E,2025-09-01
+7,,Nhà ở,,0,true,🏠,#BC6C25,2025-09-01
+8,,Tiền lương & Thu nhập,,0,true,💰,#52B788,2025-09-01
+9,,Khoản vay & Thanh toán,,0,true,💳,#E63946,2025-09-01
+10,1,Ăn sáng,1,1,true,☕,#F76C6C,2025-09-02
+11,1,Ăn trưa,1,1,true,🍽️,#F76C6C,2025-09-02
+12,1,Ăn tối,1,1,true,🍴,#F76C6C,2025-09-02
+13,1,Cà phê & đồ uống,1,1,true,☕,#F76C6C,2025-09-02
+14,2,Xăng dầu,2,1,true,⛽,#4ECDC4,2025-09-02
+15,2,Bảo dưỡng xe,2,1,true,🔧,#4ECDC4,2025-09-02
+16,2,Taxi & Grab,2,1,true,🚕,#4ECDC4,2025-09-02
+17,3,Học phí,3,1,true,📖,#45B7D1,2025-09-02
+18,3,Sách & Tài liệu,3,1,true,📕,#45B7D1,2025-09-02
+19,4,Thể dục,4,1,true,🏃,#96CEB4,2025-09-02
+20,5,Xem phim & Series,5,1,true,🎞️,#FFEAA7,2025-09-02

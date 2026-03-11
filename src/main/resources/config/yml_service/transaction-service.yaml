@@ -1,34 +1,34 @@
 spring:
   application:
     name: transaction-service
-  
-  # Database Configuration
+
+  # Database Configuration (MySQL)
   datasource:
-    url: jdbc:postgresql://localhost:5433/fpm_transactions
-    username: root
-    password: admin123456
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mysql://localhost:3306/wallet_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: dev
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
       connection-timeout: 30000
-  
+
   # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: none  # Use Flyway for migrations
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-  
+
   # Flyway Configuration
   flyway:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
-  
+
   # RabbitMQ Configuration
   rabbitmq:
     host: localhost
@@ -58,9 +58,9 @@ eureka:
 grpc:
   client:
     wallet-service:
-      address: discovery:///wallet-service  # Sử dụng Eureka discovery
+      address: discovery:///wallet-service
       negotiation-type: plaintext
-      max-inbound-message-size: 4194304  # 4MB
+      max-inbound-message-size: 4194304
   server:
     port: 9093
 

@@ -1,0 +1,27 @@
+route_id,path,method,service_uri,requires_auth,rate_limit_replenish,rate_limit_burst,circuit_breaker,description
+1,/api/v1/auth/register,POST,lb://user-auth-service,false,10,20,false,User registration endpoint
+2,/api/v1/auth/login,POST,lb://user-auth-service,false,5,10,authCircuitBreaker,User login with circuit breaker
+3,/api/v1/auth/validate,GET,lb://user-auth-service,true,10,20,false,Validate JWT token
+4,/api/v1/auth/refresh,POST,lb://user-auth-service,true,5,10,false,Refresh access token
+5,/api/v1/auth/logout,POST,lb://user-auth-service,true,10,20,false,User logout with blacklist
+6,/api/v1/users/me,GET,lb://user-auth-service,true,20,30,false,Get current user profile
+7,/api/v1/users/me,PUT,lb://user-auth-service,true,10,20,false,Update user profile
+8,/api/v1/users/preferences,GET,lb://user-auth-service,true,20,30,false,Get user preferences
+9,/api/v1/users/preferences,PUT,lb://user-auth-service,true,10,20,false,Update user preferences
+10,/api/v1/wallets/**,GET,lb://wallet-service,true,30,50,walletCircuitBreaker,Wallet list and detail
+11,/api/v1/wallets/**,POST,lb://wallet-service,true,10,20,walletCircuitBreaker,Create new wallet
+12,/api/v1/wallets/**,PUT,lb://wallet-service,true,10,20,walletCircuitBreaker,Update wallet
+13,/api/v1/wallets/**/toggle,PATCH,lb://wallet-service,true,10,20,walletCircuitBreaker,Toggle wallet active status
+14,/api/v1/wallets/**,DELETE,lb://wallet-service,true,10,20,walletCircuitBreaker,Soft delete wallet
+15,/api/v1/categories/**,GET,lb://wallet-service,true,30,50,false,Category list and detail
+16,/api/v1/categories/**,POST,lb://wallet-service,true,10,20,false,Create category
+17,/api/v1/categories/**,PUT,lb://wallet-service,true,10,20,false,Update category
+18,/api/v1/categories/**,DELETE,lb://wallet-service,true,10,20,false,Delete category
+19,/api/v1/transactions/**,GET,lb://transaction-service,true,30,50,transactionCircuitBreaker,Transaction list and detail
+20,/api/v1/transactions/**,POST,lb://transaction-service,true,10,20,transactionCircuitBreaker,Create transaction
+21,/api/v1/transactions/**,PUT,lb://transaction-service,true,10,20,transactionCircuitBreaker,Update transaction
+22,/api/v1/transactions/**,DELETE,lb://transaction-service,true,10,20,transactionCircuitBreaker,Delete transaction
+23,/api/v1/reports/**,GET,lb://reporting-service,true,5,10,false,Reporting and summary endpoints
+24,/api/v1/budgets/**,GET,lb://reporting-service,true,15,25,false,Budget endpoints
+25,/api/v1/budgets/alerts,GET,lb://reporting-service,true,15,25,false,Budget alert list
+26,/api/v1/budgets/alerts/**/read,PATCH,lb://reporting-service,true,10,20,false,Mark alert as read

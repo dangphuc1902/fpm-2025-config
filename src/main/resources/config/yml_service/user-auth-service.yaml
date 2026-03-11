@@ -1,0 +1,102 @@
+spring:
+  application:
+    name: user-auth-service
+
+  # Database config (MySQL)
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_auth_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: dev
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        generate_statistics: true
+    open-in-view: false
+
+  # Flyway migration config
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    out-of-order: true
+
+  # RabbitMQ
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+server:
+  port: 8081
+
+# Security & JWT config
+jwt:
+  secret: your_jwt_secret_key
+  expiration: 86400000
+
+# gRPC config
+grpc:
+  server:
+    port: 9090
+    security:
+      enabled: true
+      certificateChain: classpath:certs/server.crt
+      privateKey: classpath:certs/server.key
+    keep-alive-time: 5s
+
+# Eureka config
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    metadata-map:
+      grpc.port: ${grpc.server.port}
+
+# Logging config
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+  file:
+    name: logs/user-auth.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+
+# Redis
+redis:
+  port: 6379
+  url: localhost
+
+# Kafka
+kafka:
+  bootstrap-servers: localhost:9092
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  consumer:
+    group-id: user-auth-group
+    auto-offset-reset: earliest
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      spring.json.trusted.packages: '*'
