@@ -1,22 +1,22 @@
-# Use an official OpenJDK runtime as a parent image
-FROM eclipse-temurin:17-jdk-jammy
+# Stage 1: Build the application
+FROM eclipse-temurin:21-jdk-alpine AS builder
+
+# Install Maven
+RUN apk add --no-cache maven
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the Maven wrapper and pom.xml to leverage Docker cache
-COPY mvnw .
-COPY .mvn .mvn
+# Copy the project files
 COPY pom.xml .
-
-# Copy the project source
 COPY src ./src
 
-# Package the application
-RUN ./mvnw package -DskipTests
+# Build the application
+RUN mvn clean package -DskipTests
 
-# Make port 8888 available to the world outside this container
-EXPOSE 8888
+# Stage 2: Create the runtime image
+FROM eclipse-temurin:21-jre-alpine
 
-# Run the JAR file
-ENTRYPOINT ["java", "-jar", "target/config-0.0.1-SNAPSHOT.jar"]
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

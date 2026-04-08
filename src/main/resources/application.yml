@@ -7,12 +7,15 @@ spring:
   cloud:
     config:
       server:
-        native:
-          search-locations: classpath:/config  # Thư mục chứa file config (e.g., api-gateway.yml)
-      enabled: true  # Bật Config Server (mặc định true, giữ để rõ ràng)
+        git:
+          uri: https://github.com/dangphuc1902/fpm-2025-config.git # URL kho Git chứa cấu hình của bạn
+          # Nếu kho Git yêu cầu xác thực, hãy uncomment và điền thông tin
+          # username: ${GIT_REPO_USERNAME}
+          # password: ${GIT_REPO_PASSWORD}
+          # search-paths: config # Nếu các file cấu hình nằm trong thư mục 'config' trong repo Git
+      # enabled: true  # Bật Config Server (mặc định true, giữ để rõ ràng)
   profiles:
-    active: native  # Sử dụng chế độ native (file-based) thay vì Git
-
+    active: git # Sử dụng chế độ git thay vì native
 management:
   endpoints:
     web:
