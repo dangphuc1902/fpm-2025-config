@@ -1,0 +1,43 @@
+name: "CI - Config & Scripts"
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '**' # Vì Repo này chỉ chứa config nên chạy khi có bất kỳ thay đổi nào
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  validate-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate SQL and Compose
+        run: |
+          echo "Validating Docker Compose..."
+          docker compose config -q
+          
+      - name: Create Config Bundle
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p release-bundle
+          # Copy toàn bộ nội dung vì đây là Repo Config
+          cp -r . release-bundle/
+          tar -czvf fpm-config-bundle.tar.gz -C release-bundle .
+          
+      - name: Upload Config Bundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fpm-config-bundle
+          path: fpm-config-bundle.tar.gz
+          retention-days: 7
+
+      - name: Config Report
+        if: always()
+        run: |
+          echo "## ⚙️ Configuration Validation" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
