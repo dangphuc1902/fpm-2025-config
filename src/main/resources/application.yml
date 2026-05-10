@@ -27,7 +27,7 @@ logging:
     root: INFO
     org.springframework.cloud: DEBUG  # Debug để kiểm tra log Config Server
   file:
-    name: D:\WorkSpace\Project\FPM-2025\log\config-server.log  # Log file (tùy chỉnh đường dẫn)
+    name: logs/config-server.log  # Log file (Sử dụng đường dẫn tương đối để chạy được trên Docker)
   logback:
     rollingpolicy:
       max-file-size: 50MB  # Giới hạn kích thước log

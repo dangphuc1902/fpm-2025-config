@@ -1,0 +1,18 @@
+# Shared configuration for all FPM microservices
+kafka:
+  bootstrap-servers: kafka:9092
+
+jwt:
+  secret: ${JWT_SECRET:your_jwt_secret_key_must_be_very_long_and_secure_at_least_32_chars}
+  expiration: 86400000
+
+app:
+  jwt:
+    refreshTokenExpirationMs: 604800000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
