@@ -55,7 +55,7 @@ spring:
           uri: lb://wallet-service
           predicates:
             - Path=/api/v1/categories/**
-        
+
         # ============ TRANSACTION ROUTES ============
         - id: transaction-service
           uri: lb://transaction-service
@@ -65,8 +65,13 @@ spring:
             - name: CircuitBreaker
               args:
                 name: transactionCircuitBreaker
-        
-        # ============ REPORTING ROUTES ============
+
+        # ============ BUDGET & REPORTING ROUTES ============
+        - id: budget-service
+          uri: lb://reporting-service
+          predicates:
+            - Path=/api/v1/budgets/**
+
         - id: reporting-service
           uri: lb://reporting-service
           predicates:
@@ -76,6 +81,23 @@ spring:
               args:
                 redis-rate-limiter.replenishRate: 5
                 redis-rate-limiter.burstCapacity: 10
+
+        # ============ OCR & AI ROUTES ============
+        - id: ocr-service
+          uri: lb://ocr-service
+          predicates:
+            - Path=/api/v1/ocr/**
+
+        - id: ai-service
+          uri: lb://ai-service
+          predicates:
+            - Path=/api/v1/ai/**
+
+        # ============ USER PROFILE & PREFERENCES ============
+        - id: user-preferences
+          uri: lb://user-auth-service
+          predicates:
+            - Path=/api/v1/users/**
       
       # Global CORS configuration
       globalcors:
@@ -102,7 +124,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: http://admin:admin@eureka-server:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
   instance:

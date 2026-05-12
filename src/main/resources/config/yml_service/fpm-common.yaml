@@ -13,6 +13,6 @@ app:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: http://admin:admin@eureka-server:8761/eureka/
   instance:
     prefer-ip-address: true
