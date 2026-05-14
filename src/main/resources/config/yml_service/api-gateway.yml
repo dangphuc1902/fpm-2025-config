@@ -164,7 +164,7 @@ management:
       show-details: always
 
 server:
-  port: 8080
+  port: ${GATEWAY_PORT:8080}
 
 logging:
   level:
